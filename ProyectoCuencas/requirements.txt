@@ -7,3 +7,4 @@ pandas
 geopy
 xlsxwriter
 matplotlib
+openpyxl
