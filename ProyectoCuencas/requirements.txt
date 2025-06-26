@@ -6,4 +6,4 @@ shapely
 pandas
 geopy
 xlsxwriter
-matplotlib.pyplot
+matplotlib
