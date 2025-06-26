@@ -7,6 +7,8 @@ import pandas as pd
 
 def ejecutar_interfaz():
     st.set_page_config(page_title="Delimitación de Cuencas", layout="wide", page_icon="🌎")
+
+    # Fondo de la aplicación
     st.markdown(
         """
         <style>
@@ -24,7 +26,7 @@ def ejecutar_interfaz():
     st.title("🌍 Delimitación de Cuencas y Análisis Morfométrico")
     st.markdown("Busca una ciudad o ingresa coordenadas, dibuja una cuenca y descarga sus parámetros.")
 
-    # Campo para búsqueda por ciudad
+    # Buscar ciudad
     with st.expander("🔎 Buscar ciudad (ejemplo: Medellín, Colombia)"):
         ciudad = st.text_input("")
 
@@ -36,7 +38,7 @@ def ejecutar_interfaz():
         else:
             st.error("❌ No se encontraron coordenadas para esa ciudad.")
 
-    # Campo para ingreso manual
+    # Coordenadas manuales
     with st.expander("📍 O ingresa coordenadas manuales"):
         col1, col2 = st.columns(2)
         with col1:
@@ -50,28 +52,25 @@ def ejecutar_interfaz():
     # Mostrar mapa
     st.subheader("🗺️ Dibuja tu cuenca hidrológica en el mapa")
     if coordenadas:
-        geom = mostrar_mapa_dibujable(coordenadas)
+        geojson_data = mostrar_mapa_dibujable(coordenadas)
     else:
         st.info("Esperando coordenadas para mostrar el mapa...")
         return
 
-    if geom:
-        gdf, resultados_dict = calcular_parametros(geom)
+    if geojson_data:
+        gdf, resultados = calcular_parametros(geojson_data)
 
-        if resultados_dict:
-            st.subheader("📊 Resultados del análisis morfométrico")
-            resultados_df = pd.DataFrame([resultados_dict])
-            st.dataframe(resultados_df.drop(columns=["Centroide X", "Centroide Y"], errors="ignore"))
+        st.subheader("📊 Resultados del análisis morfométrico")
+        df = pd.DataFrame([resultados])
+        datos_graficar = df.drop(columns=["Centroide X", "Centroide Y"])
+        st.dataframe(datos_graficar, use_container_width=True)
 
-            col1, col2 = st.columns(2)
-            with col1:
-                excel = exportar_excel(resultados_dict)
-                st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
-            with col2:
-                shapefile_zip = exportar_shapefile_zip(gdf)
-                st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
-        else:
-            st.warning("⚠️ No se pudieron calcular los parámetros.")
+        col1, col2 = st.columns(2)
+        with col1:
+            excel = exportar_excel(df)
+            st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
+        with col2:
+            shapefile_zip = exportar_shapefile_zip(gdf)
+            st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
     else:
-        st.warning("✏️ Por favor, dibuja una cuenca en el mapa para calcular los parámetros.")
-
+        st.warning("Dibuja una cuenca para ver los resultados y habilitar las descargas.")
