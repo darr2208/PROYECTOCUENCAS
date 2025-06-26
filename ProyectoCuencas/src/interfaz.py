@@ -1,7 +1,7 @@
 import streamlit as st
 from src.mapa import mostrar_mapa_dibujable
 from src.geocodificador import obtener_coordenadas
-from src.morfometria import calcular_parametros_morfometricos
+from src.morfometria import calcular_parametros
 from src.exportacion import exportar_shapefile_zip, exportar_excel
 import pandas as pd
 
