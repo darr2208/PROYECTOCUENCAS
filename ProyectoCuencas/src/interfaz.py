@@ -8,7 +8,6 @@ import pandas as pd
 def ejecutar_interfaz():
     st.set_page_config(page_title="Delimitación de Cuencas", layout="wide", page_icon="🌎")
 
-    # Fondo de la aplicación
     st.markdown(
         """
         <style>
@@ -26,7 +25,6 @@ def ejecutar_interfaz():
     st.title("🌍 Delimitación de Cuencas y Análisis Morfométrico")
     st.markdown("Busca una ciudad o ingresa coordenadas, dibuja una cuenca y descarga sus parámetros.")
 
-    # Buscar ciudad
     with st.expander("🔎 Buscar ciudad (ejemplo: Medellín, Colombia)"):
         ciudad = st.text_input("")
 
@@ -38,18 +36,15 @@ def ejecutar_interfaz():
         else:
             st.error("❌ No se encontraron coordenadas para esa ciudad.")
 
-    # Coordenadas manuales
     with st.expander("📍 O ingresa coordenadas manuales"):
         col1, col2 = st.columns(2)
         with col1:
             lat = st.number_input("Latitud", format="%.6f")
         with col2:
             lon = st.number_input("Longitud", format="%.6f")
-
         if lat != 0.0 or lon != 0.0:
             coordenadas = [lat, lon]
 
-    # Mostrar mapa
     st.subheader("🗺️ Dibuja tu cuenca hidrológica en el mapa")
     if coordenadas:
         geojson_data = mostrar_mapa_dibujable(coordenadas)
@@ -59,7 +54,6 @@ def ejecutar_interfaz():
 
     if geojson_data:
         gdf, resultados = calcular_parametros(geojson_data)
-
         st.subheader("📊 Resultados del análisis morfométrico")
         df = pd.DataFrame([resultados])
         datos_graficar = df.drop(columns=["Centroide X", "Centroide Y"])
@@ -67,7 +61,7 @@ def ejecutar_interfaz():
 
         col1, col2 = st.columns(2)
         with col1:
-            excel = exportar_excel(df)
+            excel = exportar_excel(resultados)
             st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
         with col2:
             shapefile_zip = exportar_shapefile_zip(gdf)
