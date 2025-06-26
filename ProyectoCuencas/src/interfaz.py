@@ -56,13 +56,14 @@ def ejecutar_interfaz():
         return
 
     resultados = None
+    gdf = None
     if geom:
-        resultados = calcular_parametros_morfometricos(geom)
+        gdf, resultados = calcular_parametros(geom)
 
     # Mostrar resultados si existen
-    if resultados is not None and not resultados.empty:
+    if resultados is not None and resultados:
         st.subheader("📊 Resultados del análisis morfométrico")
-        datos_graficar = resultados.drop(columns=["Centroide X", "Centroide Y"])
+        datos_graficar = pd.DataFrame([resultados]).drop(columns=["Centroide X", "Centroide Y"])
         st.dataframe(datos_graficar)
 
         # Descarga de archivos
@@ -71,7 +72,7 @@ def ejecutar_interfaz():
             excel = exportar_excel(resultados)
             st.download_button("📥 Descargar Excel", data=excel, file_name="resultados_cuenca.xlsx")
         with col2:
-            shapefile_zip = exportar_shapefile_zip(geom)
+            shapefile_zip = exportar_shapefile_zip(gdf)
             st.download_button("📥 Descargar Shapefile (.zip)", data=shapefile_zip, file_name="cuenca_shapefile.zip")
     else:
         st.warning("Dibuja una cuenca para ver los resultados y habilitar las descargas.")
