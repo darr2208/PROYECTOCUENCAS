@@ -31,7 +31,7 @@ def mostrar_mapa_dibujable(coordenadas):
         geom = st_data["last_active_drawing"]["geometry"]
         coords = geom["coordinates"][0]
 
-        if len(coords) == 5:
+        if len(coords) >= 4:
             lat = coords[0][1]
             lon = coords[0][0]
             folium.Marker(
